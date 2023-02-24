@@ -169,13 +169,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   flex: 1,
                   child: Row(
-                    children: const [
-                      SizedBox(
+                    children: [
+                      const SizedBox(
                         width: 30,
                       ),
                       Text(
-                        '다음 보상은 ...',
-                        style: TextStyle(
+                        '다음 보상은 ${Provider.of<StatusNotifier>(context).rewardNames[Provider.of<StatusNotifier>(context).currentLevel]}',
+                        style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
@@ -186,18 +186,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   flex: 5,
                   child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 3),
-                        borderRadius: BorderRadius.circular(20)),
-                    width: MediaQuery.of(context).size.width - 40,
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      children: [
-                        mapImageByLevel(Provider.of<StatusNotifier>(context))
-                      ],
-                    ),
-                  ),
+                      decoration: BoxDecoration(
+                          border: Border.all(width: 3),
+                          borderRadius: BorderRadius.circular(20)),
+                      width: MediaQuery.of(context).size.width - 40,
+                      margin: const EdgeInsets.only(bottom: 10),
+                      // padding: const EdgeInsets.all(10.0),
+                      child: mapImageByLevel(
+                          Provider.of<StatusNotifier>(context))),
                 ),
               ],
             ),
@@ -257,17 +253,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           )
-        : Column(
-            children: [
-              FittedBox(
+        : SizedBox(
+            height: double.maxFinite,
+            // width: double.maxFinite,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              clipBehavior: Clip.hardEdge,
+              child: FittedBox(
                 fit: BoxFit.fill,
                 child: Image.file(file),
               ),
-              Text(
-                Provider.of<StatusNotifier>(context).rewardNames[level],
-                style: const TextStyle(fontSize: 20),
-              )
-            ],
+            ),
           );
   }
 }

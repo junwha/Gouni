@@ -6,10 +6,9 @@ import 'package:makerthon/model/status_model.dart';
 
 class StatusNotifier extends ChangeNotifier {
   String _characterName = "Default name";
-  List<String> _rewardNames = ["", "", ""];
-  File? _rewardImage1;
-  File? _rewardImage2;
-  File? _rewardImage3;
+  List<String> _rewardNames = ["레벨1", "레벨2", "레벨3"];
+  List<File?> _rewardImages = [null, null, null];
+
   int _point = 0;
   int _currentLevel = 0;
   double _currentPercentage = 0;
@@ -17,9 +16,10 @@ class StatusNotifier extends ChangeNotifier {
 
   String get characterName => _characterName;
   List<String> get rewardNames => _rewardNames;
-  File? get rewardImage1 => _rewardImage1;
-  File? get rewardImage2 => _rewardImage2;
-  File? get rewardImage3 => _rewardImage3;
+  File? get rewardImage1 => _rewardImages[0];
+  File? get rewardImage2 => _rewardImages[1];
+  File? get rewardImage3 => _rewardImages[2];
+  List<File?> get rewardImages => _rewardImages;
   int get point => _point;
   int get currentLevel => _currentLevel;
   double get currentPercentage => _currentPercentage;
@@ -60,25 +60,13 @@ class StatusNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateRewardName(String re1, String re2, String re3) {
-    _rewardNames = [re1, re2, re3];
+  void updateRewardName(List<String> newNames) {
+    _rewardNames = newNames;
     notifyListeners();
   }
 
-  void updateRewardImage1(File? im1) {
-    _rewardImage1 = im1;
-    notifyListeners();
-  }
-
-  void updateRewardImage2(File? im2) {
-    _rewardImage2 = im2;
-    notifyListeners();
-  }
-
-  void updateRewardImage(File? im1, File? im2, File? im3) {
-    _rewardImage1 = im1;
-    _rewardImage2 = im2;
-    _rewardImage3 = im3;
+  void updateRewardImage(List<File?> newImages) {
+    _rewardImages = newImages;
     notifyListeners();
   }
 

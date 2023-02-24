@@ -13,18 +13,11 @@ class RewardScreen extends StatefulWidget {
 }
 
 class _RewardScreenState extends State<RewardScreen> {
-  File? image1;
-  File? image2;
-  File? image3;
+  List<File?> images = [null, null, null];
 
-  late TextEditingController _rewardNameFieldController1 =
-      TextEditingController();
-  late TextEditingController _rewardNameFieldController2 =
-      TextEditingController();
-  late TextEditingController _rewardNameFieldController3 =
-      TextEditingController();
+  late List<TextEditingController> _rewardNameFieldControllers;
 
-  Future pickImage1() async {
+  Future pickImage(int i) async {
     final image = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       maxHeight: 200,
@@ -32,31 +25,7 @@ class _RewardScreenState extends State<RewardScreen> {
     );
     if (image != null) {
       final imageTemp = File(image.path);
-      setState(() => image1 = imageTemp);
-    }
-  }
-
-  Future pickImage2() async {
-    final image = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      maxHeight: 200,
-      maxWidth: 200,
-    );
-    if (image != null) {
-      final imageTemp = File(image.path);
-      setState(() => image2 = imageTemp);
-    }
-  }
-
-  Future pickImage3() async {
-    final image = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      maxHeight: 200,
-      maxWidth: 200,
-    );
-    if (image != null) {
-      final imageTemp = File(image.path);
-      setState(() => image3 = imageTemp);
+      setState(() => images[i] = imageTemp);
     }
   }
 
@@ -65,23 +34,16 @@ class _RewardScreenState extends State<RewardScreen> {
     StatusNotifier unsubscribableNotifier =
         Provider.of<StatusNotifier>(context, listen: false);
     unsubscribableNotifier.calculateLevelAndPercentage();
-    _rewardNameFieldController1 =
-        TextEditingController(text: unsubscribableNotifier.rewardNames[0]);
-    _rewardNameFieldController2 =
-        TextEditingController(text: unsubscribableNotifier.rewardNames[1]);
-    _rewardNameFieldController3 =
-        TextEditingController(text: unsubscribableNotifier.rewardNames[2]);
-    image1 = unsubscribableNotifier.rewardImage1;
-    image2 = unsubscribableNotifier.rewardImage2;
-    image3 = unsubscribableNotifier.rewardImage3;
+    _rewardNameFieldControllers = unsubscribableNotifier.rewardNames
+        .map((t) => TextEditingController(text: t))
+        .toList();
+
     super.initState();
   }
 
   @override
   void dispose() {
-    _rewardNameFieldController1.dispose();
-    _rewardNameFieldController2.dispose();
-    _rewardNameFieldController3.dispose();
+    _rewardNameFieldControllers.map((c) => c.dispose());
     super.dispose();
   }
 
@@ -103,303 +65,9 @@ class _RewardScreenState extends State<RewardScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "레벨 1",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                const Text(
-                  "보상 이름",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
-                  ),
-                ),
-                TextField(
-                  controller: _rewardNameFieldController1,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 10),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none),
-                    filled: true,
-                    fillColor: Colors.grey.shade300,
-                    hintText: '이름을 입력하세요',
-                  ),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                const Text(
-                  "이미지",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
-                  ),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                image1 == null
-                    ? Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.all(10),
-                        width: MediaQuery.of(context).size.width - 20,
-                        height: 200,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                                onTap: pickImage1,
-                                child: const Icon(
-                                  Icons.add_photo_alternate_outlined,
-                                  size: 60,
-                                )),
-                            const Text(
-                              '이미지를 추가해주세요.',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.grey),
-                            )
-                          ],
-                        ),
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.all(10),
-                        width: MediaQuery.of(context).size.width - 20,
-                        height: 200,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const SizedBox(
-                              width: 1,
-                            ),
-                            Image.file(image1!),
-                            GestureDetector(
-                              onTap: () => pickImage1(),
-                              child: const Icon(Icons.image),
-                            )
-                          ],
-                        ),
-                      ),
-                const SizedBox(
-                  height: 5,
-                ),
-                const SizedBox(
-                  height: 40,
-                ),
-                const Text(
-                  "레벨 2",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                const Text(
-                  "보상 이름",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
-                  ),
-                ),
-                TextField(
-                  controller: _rewardNameFieldController2,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 10),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none),
-                    filled: true,
-                    fillColor: Colors.grey.shade300,
-                    hintText: '이름을 입력하세요',
-                  ),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                const Text(
-                  "이미지",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
-                  ),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                image2 == null
-                    ? Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.all(10),
-                        width: MediaQuery.of(context).size.width - 20,
-                        height: 200,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                                onTap: pickImage2,
-                                child: const Icon(
-                                  Icons.add_photo_alternate_outlined,
-                                  size: 60,
-                                )),
-                            const Text(
-                              '이미지를 추가해주세요.',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.grey),
-                            )
-                          ],
-                        ),
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.all(10),
-                        width: MediaQuery.of(context).size.width - 20,
-                        height: 200,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const SizedBox(
-                              width: 1,
-                            ),
-                            Image.file(image2!),
-                            GestureDetector(
-                              onTap: () => pickImage2(),
-                              child: const Icon(Icons.image),
-                            )
-                          ],
-                        ),
-                      ),
-                const SizedBox(
-                  height: 5,
-                ),
-                const SizedBox(
-                  height: 40,
-                ),
-                const Text(
-                  "레벨 3",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                const Text(
-                  "보상 이름",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
-                  ),
-                ),
-                TextField(
-                  controller: _rewardNameFieldController3,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 10),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none),
-                    filled: true,
-                    fillColor: Colors.grey.shade300,
-                    hintText: '이름을 입력하세요',
-                  ),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                const Text(
-                  "이미지",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
-                  ),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                image3 == null
-                    ? Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.all(10),
-                        width: MediaQuery.of(context).size.width - 20,
-                        height: 200,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                                onTap: pickImage3,
-                                child: const Icon(
-                                  Icons.add_photo_alternate_outlined,
-                                  size: 60,
-                                )),
-                            const Text(
-                              '이미지를 추가해주세요.',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.grey),
-                            )
-                          ],
-                        ),
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.all(10),
-                        width: MediaQuery.of(context).size.width - 20,
-                        height: 200,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const SizedBox(
-                              width: 1,
-                            ),
-                            Image.file(image3!),
-                            GestureDetector(
-                              onTap: () => pickImage3(),
-                              child: const Icon(Icons.image),
-                            )
-                          ],
-                        ),
-                      ),
-                const SizedBox(
-                  height: 5,
-                ),
+                buildLevelArea(0),
+                buildLevelArea(1),
+                buildLevelArea(2),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -408,16 +76,10 @@ class _RewardScreenState extends State<RewardScreen> {
                           StatusNotifier notifier = Provider.of<StatusNotifier>(
                               context,
                               listen: false);
-                          notifier.updateRewardName(
-                            _rewardNameFieldController1.text,
-                            _rewardNameFieldController2.text,
-                            _rewardNameFieldController3.text,
-                          );
-                          notifier.updateRewardImage(
-                            image1,
-                            image2,
-                            image3,
-                          );
+                          notifier.updateRewardName(_rewardNameFieldControllers
+                              .map((c) => c.text)
+                              .toList());
+                          notifier.updateRewardImage(images);
                           notifier.calculateLevelAndPercentage();
                           Navigator.of(context).pop();
                         },
@@ -428,5 +90,103 @@ class _RewardScreenState extends State<RewardScreen> {
             ),
           ),
         ));
+  }
+
+  Widget renderImage(File? file, int i) {
+    return file == null
+        ? Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: const EdgeInsets.all(10),
+            width: MediaQuery.of(context).size.width - 20,
+            height: 200,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                    onTap: () => pickImage(i),
+                    child: const Icon(
+                      Icons.add_photo_alternate_outlined,
+                      size: 60,
+                    )),
+                const Text(
+                  '이미지를 추가해주세요.',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey),
+                )
+              ],
+            ),
+          )
+        : SizedBox(
+            height: MediaQuery.of(context).size.width / 2,
+            width: double.maxFinite,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              clipBehavior: Clip.hardEdge,
+              child: FittedBox(
+                fit: BoxFit.fill,
+                child: Image.file(file),
+              ),
+            ),
+          );
+  }
+
+  Widget buildLevelArea(int i) {
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "레벨 ${i + 1}",
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          const Text(
+            "보상 이름",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey,
+            ),
+          ),
+          TextField(
+            controller: _rewardNameFieldControllers[i],
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none),
+              filled: true,
+              fillColor: Colors.grey.shade300,
+              hintText: '이름을 입력하세요',
+            ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          const Text(
+            "이미지",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          renderImage(images[i], i),
+          const SizedBox(
+            height: 40,
+          ),
+        ]);
   }
 }
