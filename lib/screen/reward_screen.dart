@@ -13,9 +13,6 @@ class RewardScreen extends StatefulWidget {
 }
 
 class _RewardScreenState extends State<RewardScreen> {
-  int goal_lv1 = 20;
-  int goal_lv2 = 50;
-  int goal_lv3 = 100;
   File? image1;
   File? image2;
   File? image3;
@@ -65,14 +62,18 @@ class _RewardScreenState extends State<RewardScreen> {
 
   @override
   void initState() {
-    Provider.of<StatusNotifier>(context, listen: false)
-        .calculateLevelAndPercentage();
-    _rewardNameFieldController1 = TextEditingController(
-        text: Provider.of<StatusNotifier>(context, listen: false).rewardName1);
-    _rewardNameFieldController2 = TextEditingController(
-        text: Provider.of<StatusNotifier>(context, listen: false).rewardName2);
-    _rewardNameFieldController3 = TextEditingController(
-        text: Provider.of<StatusNotifier>(context, listen: false).rewardName3);
+    StatusNotifier unsubscribableNotifier =
+        Provider.of<StatusNotifier>(context, listen: false);
+    unsubscribableNotifier.calculateLevelAndPercentage();
+    _rewardNameFieldController1 =
+        TextEditingController(text: unsubscribableNotifier.rewardNames[0]);
+    _rewardNameFieldController2 =
+        TextEditingController(text: unsubscribableNotifier.rewardNames[1]);
+    _rewardNameFieldController3 =
+        TextEditingController(text: unsubscribableNotifier.rewardNames[2]);
+    image1 = unsubscribableNotifier.rewardImage1;
+    image2 = unsubscribableNotifier.rewardImage2;
+    image3 = unsubscribableNotifier.rewardImage3;
     super.initState();
   }
 
@@ -417,8 +418,7 @@ class _RewardScreenState extends State<RewardScreen> {
                             image2,
                             image3,
                           );
-                          notifier.updateRewardTargets(
-                              goal_lv1, goal_lv2, goal_lv3);
+                          notifier.calculateLevelAndPercentage();
                           Navigator.of(context).pop();
                         },
                         child: const Text('수정')),

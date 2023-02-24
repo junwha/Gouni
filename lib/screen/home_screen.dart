@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:makerthon/notifier/status_notifier.dart';
 import 'package:makerthon/screen/keyword_screen.dart';
@@ -13,19 +15,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final double _currentNum = 60;
-  final double _maxNum = 100;
   final double _toolBarHeight = 60;
 
   final TextEditingController _characterNameFieldController =
       TextEditingController();
 
   late StatusNotifier unsubscribableNotifier;
-  //final Future<StatusModel> statusData = Api.getStatusFromAPI();
-
   @override
   void initState() {
-    // TODO: implement here
     unsubscribableNotifier =
         Provider.of<StatusNotifier>(context, listen: false);
     super.initState();
@@ -134,7 +131,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                const Expanded(flex: 5, child: Text('Hello') //Cube(
+                Expanded(
+                    flex: 5,
+                    child: mapObjectByLevel(Provider.of<StatusNotifier>(context)
+                        .currentLevel) //Cube(
                     //  onSceneCreated: (Scene scene) {
                     //    scene.world.add(Object(
                     //      fileName: 'assets/test/test.obj',
@@ -152,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       LinearPercentIndicator(
                         width: MediaQuery.of(context).size.width - 40,
                         animation: true,
+                        animateFromLastPercent: true,
                         lineHeight: 20.0,
                         animationDuration: 1500,
                         percent: Provider.of<StatusNotifier>(context)
@@ -193,42 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.all(10.0),
                     child: Column(
                       children: [
-                        Provider.of<StatusNotifier>(context).rewardImage1 ==
-                                null
-                            ? Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding: const EdgeInsets.all(10),
-                                width: MediaQuery.of(context).size.width - 20,
-                                height: 200,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: const [
-                                    Icon(
-                                      Icons.add_photo_alternate_outlined,
-                                      size: 60,
-                                    ),
-                                    Text(
-                                      '이미지를 추가해주세요.',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.grey),
-                                    )
-                                  ],
-                                ),
-                              )
-                            : FittedBox(
-                                fit: BoxFit.fill,
-                                child: Image.file(
-                                    Provider.of<StatusNotifier>(context)
-                                        .rewardImage1!)),
-                        Text(
-                          Provider.of<StatusNotifier>(context).rewardName1,
-                          style: const TextStyle(fontSize: 20),
-                        ),
+                        mapImageByLevel(Provider.of<StatusNotifier>(context))
                       ],
                     ),
                   ),
@@ -244,6 +210,65 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> refreshEvent() async {
     unsubscribableNotifier.fetchCounts();
     return;
+  }
+
+  Text mapObjectByLevel(int level) {
+    if (level == 0) return const Text('Lv 0');
+    if (level == 1) return const Text('Lv 1');
+    if (level == 2) return const Text('Lv 2');
+    if (level == 3) return const Text('Lv 3');
+    return const Text("");
+  }
+
+  Widget mapImageByLevel(StatusNotifier notifier) {
+    int level = notifier.currentLevel;
+    File? file;
+    if (level == 0) {
+      file = notifier.rewardImage1;
+    } else if (level == 1) {
+      file = notifier.rewardImage2;
+    } else if (level == 2) {
+      file = notifier.rewardImage3;
+    }
+
+    return file == null
+        ? Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: const EdgeInsets.all(10),
+            width: MediaQuery.of(context).size.width - 20,
+            height: 200,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.add_photo_alternate_outlined,
+                  size: 60,
+                ),
+                Text(
+                  '이미지를 추가해주세요.',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey),
+                )
+              ],
+            ),
+          )
+        : Column(
+            children: [
+              FittedBox(
+                fit: BoxFit.fill,
+                child: Image.file(file),
+              ),
+              Text(
+                Provider.of<StatusNotifier>(context).rewardNames[level],
+                style: const TextStyle(fontSize: 20),
+              )
+            ],
+          );
   }
 }
 

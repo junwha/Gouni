@@ -6,9 +6,7 @@ import 'package:makerthon/model/status_model.dart';
 
 class StatusNotifier extends ChangeNotifier {
   String _characterName = "Default name";
-  String _rewardName1 = "Default name";
-  String _rewardName2 = "Default name";
-  String _rewardName3 = "Default name";
+  List<String> _rewardNames = ["", "", ""];
   File? _rewardImage1;
   File? _rewardImage2;
   File? _rewardImage3;
@@ -18,9 +16,7 @@ class StatusNotifier extends ChangeNotifier {
   List<int> _targets = [10, 20, 30];
 
   String get characterName => _characterName;
-  String get rewardName1 => _rewardName1;
-  String get rewardName2 => _rewardName2;
-  String get rewardName3 => _rewardName3;
+  List<String> get rewardNames => _rewardNames;
   File? get rewardImage1 => _rewardImage1;
   File? get rewardImage2 => _rewardImage2;
   File? get rewardImage3 => _rewardImage3;
@@ -65,9 +61,17 @@ class StatusNotifier extends ChangeNotifier {
   }
 
   void updateRewardName(String re1, String re2, String re3) {
-    _rewardName1 = re1;
-    _rewardName2 = re2;
-    _rewardName3 = re3;
+    _rewardNames = [re1, re2, re3];
+    notifyListeners();
+  }
+
+  void updateRewardImage1(File? im1) {
+    _rewardImage1 = im1;
+    notifyListeners();
+  }
+
+  void updateRewardImage2(File? im2) {
+    _rewardImage2 = im2;
     notifyListeners();
   }
 
