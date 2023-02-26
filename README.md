@@ -1,16 +1,83 @@
-# makerthon
+# About
+이 프로젝트는 제4회 패스핵 메이커톤에 참가하여 제작한 작품입니다.
 
-A new Flutter project.
+## 작품 개요
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+> **작품명**
+> 
 
-A few resources to get you started if this is your first Flutter project:
+우리 아이 욕설 방지 캠페인
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+> **한줄 소개**
+> 
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+아이가 고운 말을 쓰면 포인트가 올라가고, 나쁜 말을 쓰면 포인트가 내려갑니다. 일정 목표를 성취할 시 부모님이 정해주신 보상을 받을 수 있습니다.
+
+> **개발 동기**
+> 
+
+단어 인식 모듈을 보고 처음 떠올린 아이디어입니다. 처음인 기술들도 많았지만 재미있고 좋은 아이디어로 느껴져서 바로 개발에 착수했습니다.
+
+> **사용 방법**
+> 
+1. 모바일 앱에서 레벨별 성취 보상을 지정합니다.
+2. 아이가 음성 인식 모듈을 들고 다니면서 고운 말과 나쁜 말을 사용합니다. 
+3. 부모님이 레벨을 확인하여 보상을 제공합니다.
+
+## 세부 내용
+
+**사용기술, 구현방안 등 작품에 대한 자세한 사항을 자유롭게 알려주세요.**
+
+---
+
+**사용 기술**: ZAM’s Lab에서 제공하는 단어 인식 모듈, Raspberry Pi, Flask, sqlite3, uwsgi, nginx, Flutter, Blender
+
+![image](https://user-images.githubusercontent.com/17183234/221403558-cca83e1d-de42-4f67-839c-dc5c854490ce.png)
+
+### Back-end
+
+1. 음성 인식 모듈은 독립된 프로세스로 지속적으로 DB에 Positive/Negative 단어 빈도 수를 기록합니다.
+    
+    (UPDATE SQL 명령만을 사용하여 Race condition을 방지합니다)
+    
+2. 사용자의 Request가 들어오면 Flask 서버는 현재 빈도 수를 DB에서 읽고, 기록을 Flush 합니다. 
+    - Flask 서버는 uwsgi 규격을 통해 nginx 웹서버 위에서 운용됩니다.
+
+### Front-end
+
+1. 관리자가 Level 1~3의 성취 목표를 설정할 수 있습니다.
+2. 사용자는 예약된 고운말을 통해 경험치를 증가시킬 수 있으며 나쁜말을 통해 감소시킬 수 있습니다.
+3. 일정 Level을 달성하면 관리자에게 앱을 보여주고 보상을 받을 수 있습니다.
+4. Level이 증가할 때마다 캐릭터가 알 → 강아지 → 늑대로 성장합니다
+
+## 기대효과
+
+**작품을 통해 얻을 수 이점, 발전 방향성 등을 알려주세요.**
+
+---
+
+### 기대효과
+
+- 부모님은 아이 곁에 없을 때에도 아이가 올바른 말을 할 수 있도록 지도해줄 수 있습니다
+- 칭찬은 고래도 춤추게 합니다. 아이는 목표를 성취할 때마다 칭찬을 받으며 따뜻한 감정을 지닌 아이로 자라날 수 있습니다
+- 포켓몬GO처럼 하나의 유행이 되어 건강한 문화로 자리 잡을 수 있을 것입니다
+
+### 발전 가능성
+
+- ZAM’s Lab에서 단어 인식을 넘어 STT 모듈까지 개발하는 미래에는 조금 더 넓은 범위로 보다 정확한 판단이 가능할 것입니다
+- 사진 인증과 Vision 기술을 결합하여 언어 습관 외에도 행동 습관을 길러줄 수 있을 것입니다
+
+### 예상되는 한계점과 대처 방안
+
+- 아이가 모듈을 종료할 수 있으나, 보상 역시 함께 종료되기 때문에 아이에게 충분한 보상을 제공한다면 적극적인 참여를 기대할 수 있습니다
+- 라즈베리파이의 중량이 아이에게 다소 부담될 수 있으나, Zam’s Lab에서 개발 중인 아두이노 호환 모듈이 출시된다면 경량화 및 소형화가 가능할 것입니다
+
+## 화면 
+### 보상 설정 ###
+![image](https://user-images.githubusercontent.com/17183234/221403465-7575e7c2-a371-48c9-a67a-108cf2eab0fb.png)
+### Level 2 ### 
+![image](https://user-images.githubusercontent.com/17183234/221403441-fcddfd23-8c5e-4694-a08f-aa6aee0420c9.png)
+### Level 3 ### 
+![image](https://user-images.githubusercontent.com/17183234/221403443-c2856ec9-72de-4743-b570-89bd72061565.png)
