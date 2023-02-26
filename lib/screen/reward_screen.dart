@@ -129,7 +129,7 @@ class _RewardScreenState extends State<RewardScreen> {
               clipBehavior: Clip.hardEdge,
               child: FittedBox(
                 fit: BoxFit.fill,
-                child: Image.file(file),
+                child: Image.file(filterQuality:FilterQuality.high, file),
               ),
             ),
           );

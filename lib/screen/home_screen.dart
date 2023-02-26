@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_cube/flutter_cube.dart';
+import 'package:makerthon/constants.dart';
 import 'package:makerthon/notifier/status_notifier.dart';
 import 'package:makerthon/screen/keyword_screen.dart';
 import 'package:makerthon/screen/reward_screen.dart';
@@ -42,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // toolbarHeight: _toolBarHeight,
         centerTitle: true,
         title: const Text(
-          "HeXA",
+          "고우니",
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
         ),
         foregroundColor: Colors.black,
@@ -131,19 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                Expanded(
-                    flex: 5,
-                    child: mapObjectByLevel(Provider.of<StatusNotifier>(context)
-                        .currentLevel) //Cube(
-                    //  onSceneCreated: (Scene scene) {
-                    //    scene.world.add(Object(
-                    //      fileName: 'assets/test/test.obj',
-                    //scale: Vector3(10, 10, 10)));
-                    //    ));
-                    //    scene.camera.zoom = 8;
-                    // },
-                    //),
-                    ),
+                Expanded(flex: 5, child: mapObjectByLevel()),
                 Expanded(
                   flex: 1,
                   child: Row(
@@ -174,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 30,
                       ),
                       Text(
-                        '다음 보상은 ${Provider.of<StatusNotifier>(context).rewardNames[Provider.of<StatusNotifier>(context).currentLevel]}',
+                        '다음 보상은 ${Provider.of<StatusNotifier>(context).rewardNames[Provider.of<StatusNotifier>(context).currentLevel%3]}',
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -208,23 +198,40 @@ class _HomeScreenState extends State<HomeScreen> {
     return;
   }
 
-  Text mapObjectByLevel(int level) {
-    if (level == 0) return const Text('Lv 0');
-    if (level == 1) return const Text('Lv 1');
-    if (level == 2) return const Text('Lv 2');
-    if (level == 3) return const Text('Lv 3');
-    return const Text("");
+  Widget mapObjectByLevel() {
+    return Consumer<StatusNotifier>(builder: (_, notifier, __) {
+      print("build again");
+      final List<List<Object>> objectForEachLevelAndMode = [
+        [buildObj(ASSET_EGG), buildObj(ASSET_EGG)],
+        [buildObj(ASSET_HAPPY_PUPPY), buildObj(ASSET_ANGRY_PUPPY)],
+        [buildObj(ASSET_HAPPY_WOLF), buildObj(ASSET_ANGRY_WOLF)]
+      ];
+      return  Cube(
+              key: UniqueKey(),
+              onSceneCreated: (Scene scene) {
+                int mode = 0;
+                if (notifier.characterMode == MODE_HEART) {
+                  scene.world.add(buildObj(ASSET_MARK_HEART));
+                } else if (notifier.characterMode == MODE_BAD) {
+                  mode = 1;
+                  scene.world.add(buildObj(ASSET_MARK_BAD));
+                }
+                scene.world.add(
+                    objectForEachLevelAndMode[notifier.currentLevel%3][mode]);
+                scene.light.setColor(Colors.white, 0.3, 0.8, 0.3);
+                scene.light.position.setFrom(Vector3(0, 10, -10));
+                scene.camera.zoom = 8;
+              },
+            ) ;
+    });
   }
 
   Widget mapImageByLevel(StatusNotifier notifier) {
     int level = notifier.currentLevel;
     File? file;
-    if (level == 0) {
-      file = notifier.rewardImage1;
-    } else if (level == 1) {
-      file = notifier.rewardImage2;
-    } else if (level == 2) {
-      file = notifier.rewardImage3;
+
+    if (level < notifier.rewardImages.length) {
+      file = notifier.rewardImages[level];
     }
 
     return file == null
@@ -260,8 +267,8 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(10),
               clipBehavior: Clip.hardEdge,
               child: FittedBox(
-                fit: BoxFit.fill,
-                child: Image.file(file),
+                fit: BoxFit.contain,
+                child: Image.file(filterQuality:FilterQuality.high, file),
               ),
             ),
           );
@@ -316,4 +323,8 @@ Future<void> _nameChangeDialog(
       ),
     ),
   );
+}
+
+Object buildObj(String filename) {
+  return Object(fileName: filename, scale: Vector3(1, 1, 1), lighting: true);
 }
